@@ -12,7 +12,25 @@
       name: httpd
       enabled: true
       state: started
+# Installation for ansible.posix: ansible-galaxy collection install ansible.posix
+  - name: Authorize traffic in default zone for http service
+    ansible.posix.firewalld:
+      service: http
+      permanent: yes
+      state: enabled
+# Reload firewall service
+  - name: Reload firewall service to apply rules
+    systemd:
+      name: firewalld
+      state: reloaded
   - name: Copy web.html
     copy:
       src: web.html
       dest: /var/www/html/index.html
+# Fix file permissions
+  - name: Apply correct permissions on index.html file
+    file:
+      path: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: '0777'
